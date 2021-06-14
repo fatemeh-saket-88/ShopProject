@@ -150,25 +150,6 @@ function Production(props) {
     setOrderBy(property);
   };
 
-  const handleClick = (event, number) => {
-    const selectedIndex = selected.indexOf(number);
-    let newSelected = [];
-
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, number);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1),
-      );
-    }
-    setSelected(newSelected);
-  };
-
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -177,8 +158,6 @@ function Production(props) {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
-
-  const isSelected = (number) => selected.indexOf(number) !== -1;
 
   //which data show in table
   const rowArr = searched.length ?  props.rows.searched :  props.rows.items
@@ -227,33 +206,28 @@ function Production(props) {
               {stableSort(rowArr, getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
-                  const isItemSelected = isSelected(row.number);
                   const labelId = `enhanced-table-checkbox-${index}`;
 
                   return (
                     <TableRow
                       hover
-                      aria-checked={isItemSelected}
                       tabIndex={-1}
-                      key={row.number}
-                      selected={isItemSelected}
+                      key={index}
                     >
                       <TableCell padding="checkbox">
                       </TableCell>
                       <TableCell component="th" id={labelId} scope="row" padding="none" align="right">
-                        {row.number}
+                        {index+1}
                       </TableCell>
                       <TableCell align="right">{row.title}</TableCell>
                       <TableCell align="right">{row.stock}</TableCell>
                       <TableCell align="right">{row.Price}</TableCell>
                       <TableCell align="right" >
-                          <DeleteIcon color="primary"  onClick={(event) =>{
-                             handleClick(event, row.number);
-                             props.deleteItem(row.number)
+                          <DeleteIcon color="primary"  onClick={() =>{
+                             props.deleteItem(index,searched)
                              }}/>
-                          <EditIcon color="primary" onClick={(event) =>{ 
-                            handleClick(event, row.number);
-                            props.history.push('/edit-producrion/'+row.number)
+                          <EditIcon color="primary" onClick={() =>{ 
+                            props.history.push('/edit-producrion/'+ row.number)
                           }}/>
                       </TableCell>
                     </TableRow>
@@ -270,7 +244,7 @@ function Production(props) {
         <TablePagination
         style={{direction:'ltr'}}
         labelRowsPerPage="نتیجه در صفحه"
-        rowsPerPageOptions={[8, 16, 32]}
+        rowsPerPageOptions={[5, 8, 16]}
         component="div"
         count={rowArr.length}
         rowsPerPage={rowsPerPage}
@@ -289,7 +263,7 @@ const mapStateToProps=(state)=>({
 })
 const mapStateToDispatch=(dispatch)=>({
   searchedItem:(value)=>dispatch(searchTitle(value)),
-  deleteItem:(e)=>dispatch(deletItem(e)),
+  deleteItem:(number,searchValue)=>dispatch(deletItem(number,searchValue)),
 })
 export default connect(mapStateToProps,mapStateToDispatch)(Production)
 

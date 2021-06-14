@@ -12,12 +12,13 @@ export const searchTitle=(value)=>({
     type:"SEARCH_ITEM",
     value
 })
-export const deletItem=(number)=>({
+export const deletItem=(number,searchValue)=>({
     type:"DELET_ITEM",
-    number
+    number,
+    searchValue
 })
 export const editItem=({name,images, tare,totalWeight,cost, rebate,discription},statuse,id)=>{
-    // console.log(statuse)
+    console.log(name)
     return { 
     type:"EDIT_ITEM",
     name,images, tare,totalWeight,cost, rebate,

@@ -7,7 +7,7 @@ import { createStore} from 'redux'
 import { Provider } from 'react-redux'
 
 const store=createStore(rootReducer)
-// console.log("store",store.getState())
+console.log("store",store.getState())
 store.subscribe(()=>console.log("store",store.getState()))
 
 ReactDOM.render(

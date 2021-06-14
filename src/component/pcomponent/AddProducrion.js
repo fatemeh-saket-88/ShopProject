@@ -11,6 +11,7 @@ import "react-inputs-validation/lib/react-inputs-validation.min.css";
 import "./AddProduct.css";
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 
 import {connect} from 'react-redux'
@@ -39,21 +40,23 @@ const useStyles = makeStyles({
   },
 });
  function AddProducrion(props) {
-  //  console.log(props.data)
   const  STATUSE_OPTIONS_LIST = [
     { name: "در دسترس", id: "0" },
     { name: "به زودی", id: "1" },
     { name: "توقف تولید", id: "2" },
   ];
-   let id=props.match.params.id? parseInt(props.match.params.id)-1: -1
-   
-   let statueData=id>=0?STATUSE_OPTIONS_LIST.filter(e=>e.name===props.data.items[id].stock)[0].id:''
+
+   let findNumber = (element) => element.number === parseInt(props.match.params.id);
+   let id= parseInt(props.data.items.findIndex(findNumber))
+  //  console.log("hhh",props.data)
+   console.log("hhhff",id)
+
+  let statueData=id>=0?STATUSE_OPTIONS_LIST.filter(e=>e.name===props.data.items[id].stock)[0].id:''
 
   const[state,setState]=useState(
     {
       name:id>=0?props.data.items[id].title:" " ,
-      // images:id>=0?props.data.items[id].images:"" , 
-      images:"" , 
+      images:id>=0?props.data.items[id].images:"" , 
       tare:id>=0?props.data.items[id].tare:" " , 
       totalWeight:id>=0?props.data.items[id].totalWeight:" "  ,
       cost:id>=0?props.data.items[id].Price:" " ,
@@ -61,11 +64,6 @@ const useStyles = makeStyles({
      discription:id>=0?props.data.items[id].discription:" "  
     }
     )
-    // useEffect(()=>{
-    //   if(id>=0){
-    //     setState({...state,[state.images]:props.data.items[id].images})
-    //    }
-    // },[])
   const[statuse,setStatuse]=useState(statueData)
   const [hasNameError,setHasNameError]=useState(true)
   const [hasImagesError,setHasImagesError]=useState(true)
@@ -93,16 +91,14 @@ const goBack=()=>{
             !hasNameError &&
             !hasTareError &&
             !hasTotalWeightError &&
-            // !hasImagesError &&
+            !hasImagesError &&
             !hasCostError &&
             !hasDiscriptionError &&
             !hasStatuseError
             ) {
-
-
               let statuseName=STATUSE_OPTIONS_LIST[parseInt(statuse)].name
               if(id>=0){
-                props.editItem(state,statuseName, parseInt(props.match.params.id))
+                props.editItem(state,statuseName, id)
               }
               else if(id=-1)
                { 
@@ -134,7 +130,6 @@ const goBack=()=>{
         const rowContainerStyle = {
           display: "block",
           verticalAlign: "middle",
-          // borderBottom: "1px solid #e5e5e5"
         };
         const labelStyle = {
           display: "inline-block"
@@ -148,7 +143,7 @@ const goBack=()=>{
         <Typography className={classes.title} color="textSecondary" gutterBottom>
         مشخصات
         </Typography>
-<form onSubmit={validateForm}>
+       <form >
           <div style={rowWrapperStyle}>
             {/* //name=عنوان محصول */}
             <div style={rowContainerStyle}>
@@ -208,7 +203,6 @@ const goBack=()=>{
                       placeholder: "عکس",
                       accept:"image/*",
                     }}
-                    value={state.images}
                     disabled={false} 
                     validate={validate} 
                     validationCallback={res =>
@@ -224,10 +218,7 @@ const goBack=()=>{
                     customStyleWrapper={{}} 
                     customStyleContainer={{}} 
                     onChange={(name,e) => {
-                      console.log("upload files ",e.target.files[0])
-                      console.log("upload url ",e.target.value)
-
-                      setState({...state,[e.target.name]:e.target.value})
+                      setState({...state,[e.target.name]:URL.createObjectURL(e.target.files[0])})
                     }}
                     validationOption={{
                       name: "images", 
@@ -238,7 +229,8 @@ const goBack=()=>{
                   />
                 </div>
               </div>
-           
+              {state.images!==''? <img style={{width:"150px", height:"200px",border:"1px solid #eee"}}  src={state.images} />
+               :<></>}
             </div>
             
             {/* //tare=وزن خالص */}
@@ -579,7 +571,7 @@ const goBack=()=>{
           <Button variant="contained" color="primary" onClick={validateForm} className={classes.button}>
                  ثبت
             </Button>
-           <Button variant="contained" color="primary" onClick={validateForm} onClick={()=>goBack()} 
+           <Button variant="contained" color="primary"  onClick={()=>goBack()} 
            className={classes.button}>
               بازگشت
            </Button>
